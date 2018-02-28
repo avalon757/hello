@@ -16,13 +16,17 @@ using std::vector;
 using std::map;
 using std::string;
 
-
+/*
 typedef vector<pair<string, date>> vtstr;
 typedef vector<pair<int, date>> vtint;
 typedef vector<pair<double, date>> vtdbl;
 typedef vector<pair<date, date>> vtdt;
 
 typedef boost::variant<vtstr, vtint, vtdbl, vtdt> vttype;
+*/
+
+typedef boost::variant<int, double, string, date> vartype;
+typedef vector<pair<vartype, date>> vttype;
 
 class shipinfo
 {
