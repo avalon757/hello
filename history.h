@@ -26,27 +26,27 @@ typedef vector<pair<int, date>> vtint;
 typedef vector<pair<double, date>> vtdbl;
 typedef vector<pair<date, date>> vtdt;
 
-typedef boost::variant<vtstr, vtint, vtdbl, vtdt> vttype;
+typedef boost::variant<vtstr, vtint, vtdbl, vtdt> field_history_t;
 */
 
-typedef boost::variant<int, double, string, date> vartype;
-typedef pair<vartype, date> vptype;
-typedef vector<vptype> vttype;
-typedef unordered_map<string, vttype> arftype;
+typedef boost::variant<int, double, string, date> field_t;
+typedef pair<field_t, date> field_tp_t;
+typedef vector<field_tp_t> field_history_t;
+typedef unordered_map<string, field_history_t> fields_t;
 
 class shipinfo
 {
 public:
     shipinfo() {
-        vttype v = {make_pair(string("长福338"), date(1970,1,1))};
+        field_history_t v = {make_pair("长福338", date(1970,1,1))};
         vt[string("name")] = v;
     };
-    const arftype &getvt() {
+    fields_t &getvt() {
         return vt;
     }
 
-//private:
-    arftype vt;
+private:
+    fields_t vt;
 };
 
 

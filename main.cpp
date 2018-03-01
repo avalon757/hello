@@ -11,14 +11,14 @@ int main() {
     std::cout << "Hello, World!" << std::endl;
 
     shipinfo s = shipinfo();
-    arftype &arf = s.vt;
-    vttype vvp = arf["name"];
-    vptype vp = *(vvp.begin());
-    vartype v = vp.first;
-    date dt = vp.second;
-    cout << get<string>(v) << " # " << dt << endl;
-    cout << get<string>(arf["name"].begin()->first)
-         << " # " << arf["name"].begin()->second << endl;
+    fields_t &flds = s.getvt();
+    field_history_t fldhist = flds["name"];
+    field_tp_t fldtp = *(fldhist.begin());
+    field_t fld = fldtp.first;
+    date dt = fldtp.second;
+    cout << get<string>(fld) << " # " << dt << endl;
+    cout << get<string>(flds["name"].begin()->first)
+         << " # " << flds["name"].begin()->second << endl;
 
     cout << t.elapsed() << endl;
     return 0;
