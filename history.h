@@ -14,11 +14,6 @@ using boost::variant;
 #include <unordered_map>
 #include <utility>
 using namespace std;
-//using std::pair;
-//using std::vector;
-//using std::map;
-//using std::string;
-//using std::unordered_map;
 
 /*
 typedef vector<pair<string, date>> vtstr;
@@ -34,19 +29,40 @@ typedef pair<field_t, date> field_tp_t;
 typedef vector<field_tp_t> field_history_t;
 typedef unordered_map<string, field_history_t> fields_t;
 
-class shipinfo
+class fieldsbase
+{
+public:
+    fieldsbase() {}
+    fields_t &getfileds() {
+        return fields;
+    }
+
+protected:
+    fields_t fields;
+};
+
+template <class T>
+void insfieldhistory(fieldsbase &f, string fname, T var, date dt) {
+    f.getfileds()[fname].push_back(make_pair(var, dt));
+    return;
+}
+
+const char *shipinfo_fieldname[] = {
+        "name",
+        "zd",
+        "zzd",
+        "gl"
+};
+
+class shipinfo : public fieldsbase
 {
 public:
     shipinfo() {
-        field_history_t v = {make_pair("长福338", date(1970,1,1))};
-        vt[string("name")] = v;
+        // init fields' name
+        field_history_t v;
+        for (const char *fn : shipinfo_fieldname)
+            fields[fn] = v;     // fields[string("name")] = v;
     };
-    fields_t &getvt() {
-        return vt;
-    }
-
-private:
-    fields_t vt;
 };
 
 
