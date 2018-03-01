@@ -33,9 +33,10 @@ class fieldsbase
 {
 public:
     fieldsbase() {}
-    fields_t &getfileds() {
+    fields_t &getfields() {
         return fields;
     }
+    vector<string> fieldsname;
 
 protected:
     fields_t fields;
@@ -43,24 +44,28 @@ protected:
 
 template <class T>
 void insfieldhistory(fieldsbase &f, string fname, T var, date dt) {
-    f.getfileds()[fname].push_back(make_pair(var, dt));
+    f.getfields()[fname].push_back(make_pair(var, dt));
     return;
 }
 
-const char *shipinfo_fieldname[] = {
-        "name",
-        "zd",
-        "zzd",
-        "gl"
-};
+//const char *shipinfo_fieldname[] = {
+//const vector<string> ship_fn = {
+//        "name",
+//        "zd",
+//        "zzd",
+//        "gl"
+//};
 
 class shipinfo : public fieldsbase
 {
 public:
+    vector<string> fieldsname = {
+            "name", "zd", "zzd", "gl"
+    };
     shipinfo() {
         // init fields' name
         field_history_t v;
-        for (const char *fn : shipinfo_fieldname)
+        for (auto fn : fieldsname)
             fields[fn] = v;     // fields[string("name")] = v;
     };
 };

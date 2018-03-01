@@ -18,7 +18,7 @@ int main() {
     insfieldhistory(s, "zzd", 1188.0, date(1990,12,1));
     insfieldhistory(s, "gl", 750, date(1970,1,4));
 /*
-    fields_t &flds = s.getfileds();
+    fields_t &flds = s.getfields();
     field_history_t fldhist = flds["name"];
     field_tp_t fldtp = *(fldhist.begin());
     field_t fld = fldtp.first;
@@ -28,7 +28,7 @@ int main() {
     cout << get<string>(flds["name"].begin()->first)
          << " # " << flds["name"].begin()->second << endl;
 */
-    for (auto v : s.getfileds()) {
+    for (auto v : s.getfields()) {
         cout << v.first << ": ";
         for (auto f : v.second)
             cout << "(" << f.first << ", " << f.second << "), ";
