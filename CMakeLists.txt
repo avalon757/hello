@@ -12,4 +12,4 @@ aux_source_directory(libs/date_time/src/gregorian DATETIME_SRC)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(hello main.cpp ${DATETIME_SRC} history.h)
+add_executable(hello main.cpp ${DATETIME_SRC} history.h history2.h)
