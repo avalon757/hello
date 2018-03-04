@@ -5,6 +5,8 @@ using namespace std;
 using namespace boost::gregorian;
 
 #include "history.h"
+#include "history2.h"
+extern void test_history2();
 
 int main() {
     boost::timer t;
@@ -34,6 +36,9 @@ int main() {
             cout << "(" << f.first << ", " << f.second << "), ";
         cout << endl;
     }
+
+    test_history2();
+
     cout << t.elapsed() << endl;
     return 0;
 }
