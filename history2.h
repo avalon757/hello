@@ -27,7 +27,7 @@ public:
     explicit histbase() : dp(dpnull) {}
     explicit histbase(date dtbegin, date dtend) : dp(dtbegin, dtend) {}
     explicit histbase(const date_period &dtprd) : dp(dtprd) {}
-    bool contains(date dt) { return dp.contains(dt); }
+//    bool contains(date dt) { return dp.contains(dt); }
 
     date_period dp;
 };
@@ -41,7 +41,7 @@ public:
             : histbase(dpnull), data() {}
     histnode(const T &d, const date_period &vdp = dpnull)
             : data(d), histbase(vdp) {}
-    const T &at(const date &dt) { return data; }
+//    const T &at(const date &dt) { return dp.contains(dt) ? data : T(); }
 //    T &get() { return data; }
 
     T data;
@@ -52,25 +52,46 @@ template <class T>
 class history2
 {
 public:
-    typedef vector<histnode<T> > vhist;
-    vhist &getdtdata() { return vtdata; };
-    void print() {
+    typedef vector<histnode<T> > vtnodes_type;
+    typedef histnode<T> node_type;
+    typedef T base_type;
+
+    vtnodes_type &getvtdata() { return vtdata; }
+
+    bool insnode(const node_type &node) {   // 插入一个节点
+        vtdata.push_back(node);
+        return true;
+    }
+    base_type const *at(date dt) {          // 时间点上的数据
+        for (auto it = vtdata.begin(); it != vtdata.end(); ++it)
+            if (it->dp.contains(dt))
+                return &(it->data);
+        return nullptr;
+    }
+    void print() const {
         for (auto v : vtdata) {
             std::cout << v.dp << " -> ";
             v.data.print();
             std::cout << std::endl;
         }
-    };
+    }
 
 protected:
-    vhist vtdata;
+    vtnodes_type vtdata;
 };
 
 // 数据定义
 class licshipbase
 {
 public:
-    date_period validperiod;
+    licshipbase() = default;
+    licshipbase(const date_period &dp, const string &cmpn,
+    double vzd, double vzzd, const string &cont)
+    : valid(true), validperiod(dp), compname(cmpn)
+            , zd(vzd), zzd(vzzd), content(cont) {}
+
+    bool valid;
+    date_period validperiod = dpnull;
     string compname;
     double zd;
     double zzd;
@@ -81,15 +102,16 @@ typedef history2<licshipbase> histlicship_t;
 class shipbase
 {
 public:
-    shipbase() : name(), zd(), zzd(), gl() {}
+    shipbase() = default;
     shipbase(const string &vname, double vzd, double vzzd, int vgl)
-            : name(vname), zd(vzd), zzd(vzzd), gl(vgl) {}
+            : valid(true), name(vname), zd(vzd), zzd(vzzd), gl(vgl) {}
 
-    void print() {
+    void print() const {
         std::cout << "(" << name << ", " << zd
                   << ", " << zzd << ", " << gl << ")";
     }
 
+    bool valid;
     string name;
     double zd;
     double zzd;
@@ -98,7 +120,6 @@ public:
     shared_ptr<histlicship_t> hklic;
 };
 typedef history2<shipbase> histship_t;
-
 
 
 class compbase
