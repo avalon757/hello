@@ -6,12 +6,12 @@
 #define HELLO_HISTORY2_H
 
 #include <boost/date_time/gregorian/gregorian.hpp>
-//using namespace boost::gregorian;
-//namespace bdt = boost::date_time;
-//using namespace boost::date_time;
+#include <boost/lexical_cast.hpp>
 using boost::gregorian::date;
 using boost::gregorian::date_period;
 using boost::date_time::neg_infin;
+using boost::lexical_cast;
+using boost::bad_lexical_cast;
 
 using std::string;
 using std::vector;
@@ -81,11 +81,12 @@ protected:
 };
 
 // 数据定义
-class licshipbase
+class licshiprec
 {
 public:
-    licshipbase() = default;
-    licshipbase(const date_period &dp, const string &cmpn,
+    licshiprec() = default;
+    licshiprec(const licshiprec &r) = default;
+    licshiprec(const date_period &dp, const string &cmpn,
     double vzd, double vzzd, const string &cont)
     : valid(true), validperiod(dp), compname(cmpn)
             , zd(vzd), zzd(vzzd), content(cont) {}
@@ -97,14 +98,20 @@ public:
     double zzd;
     string content;
 };
-typedef history2<licshipbase> histlicship_t;
+typedef history2<licshiprec> hislicship_t;
 
-class shipbase
+class shiprec
 {
 public:
-    shipbase() = default;
-    shipbase(const string &vname, double vzd, double vzzd, int vgl)
+    shiprec() = default;
+    shiprec(const shiprec &r) = default;
+    shiprec(const string &vname, double vzd, double vzzd, int vgl)
             : valid(true), name(vname), zd(vzd), zzd(vzzd), gl(vgl) {}
+    shiprec(const string &sname, const string &szd, const string &szzd, const string &sgl)
+            : valid(true), name(sname),
+              zd(lexical_cast<double>(szd)),
+              zzd(lexical_cast<double>(szzd)),
+              gl(lexical_cast<int>(sgl)) {}
 
     void print() const {
         std::cout << "(" << name << ", " << zd
@@ -116,13 +123,13 @@ public:
     double zd;
     double zzd;
     int gl;
-    shared_ptr<histlicship_t> lic;
-    shared_ptr<histlicship_t> hklic;
+    shared_ptr<hislicship_t> lic;
+    shared_ptr<hislicship_t> hklic;
 };
-typedef history2<shipbase> histship_t;
+typedef history2<shiprec> hisship_t;
 
 
-class compbase
+class companyrec
 {
     string name;
     string addr;
@@ -130,25 +137,5 @@ class compbase
 };
 
 
-
-
-//class histbase
-//{
-//    date_period dp;
-//    bool contains(const date &dt) { return dp.contains(dt); }
-//};
-//
-//class shipbase
-//{
-//    string name;
-//    double zd;
-//    double zzd;
-//    int gl;
-//};
-//
-//class histship : public histbase, shipbase
-//{
-//
-//};
 
 #endif //HELLO_HISTORY2_H
