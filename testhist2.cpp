@@ -2,12 +2,42 @@
 // Created by wang on 18-3-3.
 //
 
+#include "history.h"
 #include "history2.h"
 using namespace std;
 using boost::gregorian::years;
 using boost::gregorian::days;
-void test_history2()
-{
+
+void test_history1() {
+
+    shipinfo s = shipinfo();
+    s.insfieldhistory("name", "长福338", date(1970,1,1));
+    s.insfieldhistory("name", "长兴388", date(1990,12,1));
+    s.insfieldhistory("zd", 988.0, date(1970,1,2));
+    s.insfieldhistory("zzd", 1088.0, date(1970,1,3));
+    s.insfieldhistory("zzd", 1188.0, date(1990,12,1));
+    s.insfieldhistory("gl", 750, date(1970,1,4));
+/*
+    fields_t &flds = s.getfields();
+    field_history_t fldhist = flds["name"];
+    field_tp_t fldtp = *(fldhist.begin());
+    field_t fld = fldtp.first;
+    date dt = fldtp.second;
+    cout << fld << " # " << dt << endl;
+    cout << get<string>(fld) << " # " << dt << endl;
+    cout << get<string>(flds["name"].begin()->first)
+         << " # " << flds["name"].begin()->second << endl;
+*/
+    for (auto v : s.getfields()) {
+        cout << v.first << ": ";
+        for (auto f : v.second)
+            cout << "(" << f.first << ", " << f.second << "), ";
+        cout << endl;
+    }
+}
+
+void test_history2() {
+
     histship_t ship;
     typedef shared_ptr<histship_t> pship_t;
     pship_t p;

@@ -14,7 +14,7 @@ using boost::variant;
 
 #include <unordered_map>
 #include <utility>
-//using namespace std;
+using std::unordered_map;
 using std::string;
 using std::vector;
 using std::pair;
