@@ -82,3 +82,26 @@ void test_history2() {
     else cout << "date,2013-5-4 is null.";
     cout << endl;
 }
+
+void test_history2a() {
+
+    typedef histnode<shiprec> snode_t;
+
+    shared_ptr<hisship_t> paship = make_shared<hisship_t>();
+    shiprec s("foo", 888.0, 1888.0, 338);
+    date_period dp(date(2000, 1, 1), date(2005, 7, 1));
+    paship->insnode(snode_t(s, dp));
+    s.name = "fooA"; s.zzd = 1988;
+    paship->insnode(snode_t(s, date_period(date(2005, 7, 1), date(2008, 1, 1))));
+    paship->insnode(snode_t(s, date_period(date(2008, 1, 1), date(2012, 1, 1))));
+    paship->print();
+
+    shared_ptr<hisship_t> pbship = make_shared<hisship_t>();
+    s = shiprec("fooB", 333.0, 338.0, 123);
+    pbship->insnode(snode_t(s, date_period(date(2006, 4, 1), date(2008, 12, 1))));
+    pbship->insnode(snode_t(s, date_period(date(2008, 12, 1), date(2010, 12, 1))));
+    pbship->insnode(snode_t(s, date_period(date(2010, 12, 1), date(2016, 1, 1))));
+    pbship->print();
+
+
+}

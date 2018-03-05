@@ -16,6 +16,9 @@ using boost::bad_lexical_cast;
 using std::string;
 using std::vector;
 using std::shared_ptr;
+using std::ostream;
+using std::cout;
+using std::endl;
 
 
 const date_period dpnull = date_period(date(neg_infin), date(neg_infin));
@@ -69,11 +72,8 @@ public:
         return nullptr;
     }
     void print() const {
-        for (auto v : vtdata) {
-            std::cout << v.dp << " -> ";
-            v.data.print();
-            std::cout << std::endl;
-        }
+        for (auto v : vtdata)
+            cout << v.dp << " -> " << v.data << endl;
     }
 
 protected:
@@ -112,10 +112,25 @@ public:
               zd(lexical_cast<double>(szd)),
               zzd(lexical_cast<double>(szzd)),
               gl(lexical_cast<int>(sgl)) {}
+    shiprec(const vector<string> &vs) {
+        if (vs.size() < 4)
+            valid = false;
+        else {
+            valid = true;
+            name = vs[0];
+            zd = lexical_cast<double>(vs[1]);
+            zzd = lexical_cast<double>(vs[2]);
+            gl = lexical_cast<int>(vs[3]);
+        }
+    }
 
     void print() const {
-        std::cout << "(" << name << ", " << zd
+        cout << "(" << name << ", " << zd
                   << ", " << zzd << ", " << gl << ")";
+    }
+    friend ostream &operator<<(ostream &os, const shiprec &r) {
+        return cout << "(" << r.name << ", " << r.zd
+                         << ", " << r.zzd << ", " << r.gl << ")";
     }
 
     bool valid;
