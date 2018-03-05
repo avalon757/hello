@@ -55,9 +55,10 @@ template <class T>
 class history2
 {
 public:
-    typedef vector<histnode<T> > vtnodes_type;
-    typedef histnode<T> node_type;
     typedef T base_type;
+    typedef histnode<T> node_type;
+    typedef vector<node_type> vtnodes_type;
+//    typedef vector<histnode<T> > vtnodes_type;
 
     vtnodes_type &getvtdata() { return vtdata; }
 
@@ -81,22 +82,52 @@ protected:
 };
 
 // 数据定义
-class licshiprec
-{
+class licshiprec {
 public:
     licshiprec() = default;
     licshiprec(const licshiprec &r) = default;
-    licshiprec(const date_period &dp, const string &cmpn,
-    double vzd, double vzzd, const string &cont)
-    : valid(true), validperiod(dp), compname(cmpn)
-            , zd(vzd), zzd(vzzd), content(cont) {}
+    licshiprec(const date_period &dp, const string &lcn, const string &cmpn,
+               const string &cont, unsigned char typ)
+            : valid(true), validperiod(dp), licno(lcn), compname(cmpn), content(cont) {
+        setyntype(typ);
+    }
+    void setyntype(unsigned char typ) {
+        ynssn = ((typ & 0x1) != 0);
+        ynssj = ((typ & 0x2) != 0);
+        ynsn  = ((typ & 0x4) != 0);
+        ynsj  = ((typ & 0x8) != 0);
+        ynjy  = ((typ & 0x10) != 0);
+        yngo  = ((typ & 0x20) != 0);
+    }
+    unsigned char getyntype() {
+        unsigned char ret = 0x0;
+        if (ynssn) ret |= 0x1;
+        if (ynssj) ret |= 0x2;
+        if (ynsn ) ret |= 0x4;
+        if (ynsj ) ret |= 0x8;
+        if (ynjy ) ret |= 0x10;
+        if (yngo ) ret |= 0x20;
+        return ret;
+    }
+
+    friend ostream &operator<<(ostream &os, const licshiprec &r) {
+        return os << "(" << r.validperiod << ", " << r.licno << ", " << r.compname
+                    << ", " << r.content << ", " << r.yngo << "|" << r.ynjy
+                << "|" << r.ynsj << "|" << r.ynsn<< "|" << r.ynssj << "|" << r.ynssn << ")";
+    }
 
     bool valid;
     date_period validperiod = dpnull;
+    string licno;
     string compname;
-    double zd;
-    double zzd;
     string content;
+    // go|jy||sj|sn||ssj|ssn  [6 - 0]
+    bool yngo;
+    bool ynjy;
+    bool ynsj;
+    bool ynsn;
+    bool ynssj;
+    bool ynssn;
 };
 typedef history2<licshiprec> hislicship_t;
 
@@ -105,12 +136,13 @@ class shiprec
 public:
     shiprec() = default;
     shiprec(const shiprec &r) = default;
-    shiprec(const string &vname, double vzd, double vzzd, int vgl)
-            : valid(true), name(vname), zd(vzd), zzd(vzzd), gl(vgl) {}
-    shiprec(const string &sname, const string &szd, const string &szzd, const string &sgl)
+    shiprec(const string &vname, double vzd, double vzzd, int vteu, int vgl)
+            : valid(true), name(vname), zd(vzd), zzd(vzzd), teu(vteu), gl(vgl) {}
+    shiprec(const string &sname, const string &szd, const string &szzd, const string &steu, const string &sgl)
             : valid(true), name(sname),
               zd(lexical_cast<double>(szd)),
               zzd(lexical_cast<double>(szzd)),
+              teu(lexical_cast<int>(steu)),
               gl(lexical_cast<int>(sgl)) {}
     shiprec(const vector<string> &vs) {
         if (vs.size() < 4)
@@ -120,23 +152,25 @@ public:
             name = vs[0];
             zd = lexical_cast<double>(vs[1]);
             zzd = lexical_cast<double>(vs[2]);
-            gl = lexical_cast<int>(vs[3]);
+            teu = lexical_cast<int>(vs[3]);
+            gl = lexical_cast<int>(vs[4]);
         }
     }
 
     void print() const {
         cout << "(" << name << ", " << zd
-                  << ", " << zzd << ", " << gl << ")";
+                  << ", " << zzd << ", " << teu << ", " << gl << ")";
     }
     friend ostream &operator<<(ostream &os, const shiprec &r) {
-        return cout << "(" << r.name << ", " << r.zd
-                         << ", " << r.zzd << ", " << r.gl << ")";
+        return os << "(" << r.name << ", " << r.zd
+                         << ", " << r.zzd << ", " << r.teu << ", " << r.gl << ")";
     }
 
     bool valid;
     string name;
     double zd;
     double zzd;
+    int teu;
     int gl;
     shared_ptr<hislicship_t> lic;
     shared_ptr<hislicship_t> hklic;

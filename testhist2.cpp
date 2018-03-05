@@ -46,22 +46,22 @@ void test_history2() {
         cout << "pship_t is null\n";
     p = make_shared<hisship_t>();
     shipnode_t sn;
-    shiprec s("foo", 888.0, 1888.0, 338);
+    shiprec s("foo", 888.0, 1888.0, 0, 338);
     p->getvtdata().push_back(shipnode_t());
     p->getvtdata().push_back(shipnode_t(s));
     date_period dp = date_period(date(1977, 1, 1), days(100));
     p->getvtdata().push_back(shipnode_t(s, dp));
 //    sn.dp = dpnull;
-    sn.data = shiprec("foo", 777.0, 1747.0, 234);
+    sn.data = shiprec("foo", 777.0, 1747.0, 0, 234);
     sn.dp = date_period(date(1970, 1, 1), date(2000, 1, 1));
     p->getvtdata().push_back(sn);
 
-    sn.data = shiprec("foo", 999.0, 1989.0, 118);
+    sn.data = shiprec("foo", 999.0, 1989.0, 60, 118);
     sn.dp = date_period(date(2000, 1, 1), date(2006, 1, 1));
     p->insnode(sn);
-    p->insnode(shipnode_t(shiprec("One", 666.0, 1626.0, 166), date_period(date(2006, 1, 1), date(2008, 1, 1))));
+    p->insnode(shipnode_t(shiprec("One", 666.0, 1626.0, 0, 166), date_period(date(2006, 1, 1), date(2008, 1, 1))));
     try {
-        p->insnode(shipnode_t(shiprec("Two", "3455.0", "2345.0", "345"), date_period(date(2006, 1, 1), date(2008, 1, 1))));
+        p->insnode(shipnode_t(shiprec("Two", "3455.0", "2345.0", "0", "345"), date_period(date(2006, 1, 1), date(2008, 1, 1))));
     } catch (bad_lexical_cast &e) {
         cout << e.what() << endl;
     }
@@ -85,10 +85,11 @@ void test_history2() {
 
 void test_history2a() {
 
-    typedef histnode<shiprec> snode_t;
+    // typedef histnode<shiprec> snode_t;        // 同下
+    typedef hisship_t::node_type snode_t;       // node type of ship history
 
     shared_ptr<hisship_t> paship = make_shared<hisship_t>();
-    shiprec s("foo", 888.0, 1888.0, 338);
+    shiprec s("foo", 888.0, 1888.0, 88, 338);
     date_period dp(date(2000, 1, 1), date(2005, 7, 1));
     paship->insnode(snode_t(s, dp));
     s.name = "fooA"; s.zzd = 1988;
@@ -97,11 +98,23 @@ void test_history2a() {
     paship->print();
 
     shared_ptr<hisship_t> pbship = make_shared<hisship_t>();
-    s = shiprec("fooB", 333.0, 338.0, 123);
+    s = shiprec("fooB", 333.0, 338.0, 0, 123);
     pbship->insnode(snode_t(s, date_period(date(2006, 4, 1), date(2008, 12, 1))));
     pbship->insnode(snode_t(s, date_period(date(2008, 12, 1), date(2010, 12, 1))));
     pbship->insnode(snode_t(s, date_period(date(2010, 12, 1), date(2016, 1, 1))));
     pbship->print();
 
-
+    typedef hislicship_t::node_type lnode_t;
+    shared_ptr<hislicship_t> palicship = make_shared<hislicship_t>();
+    dp = date_period(date(2015, 10, 24), date(2017, 10, 24));
+    licshiprec l(dp, "XX20150016", "fooCOMP", "Your Lisence Content is:...", 0x38);
+    palicship->insnode(lnode_t(l, dp));
+    dp = date_period(date(2017, 10, 12), date(2019, 10, 12));
+    l.validperiod = dp;
+    l.licno = "SS20170138";
+    l.ynsj = false;
+    l.ynsn = true;
+    palicship->insnode(lnode_t(l, dp));
+    palicship->print();
+    cout << "0x" << hex << static_cast<unsigned short>(l.getyntype()) << dec << endl;
 }
