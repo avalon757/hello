@@ -115,6 +115,8 @@ void test_history2a() {
     l.ynsj = false;
     l.ynsn = true;
     palicship->insnode(lnode_t(l, dp));
+    l = licshiprec("2017-10-06", "2019-10-01", "BB20170338", "fooYYY", "Your Lisence...", "32");
+    palicship->insnode(lnode_t(l, l.validperiod));
     palicship->print();
-    cout << "0x" << hex << static_cast<unsigned short>(l.getyntype()) << dec << endl;
+    cout << l.getyntype() << " - 0x" << hex << l.getyntype() << dec << endl;
 }

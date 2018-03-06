@@ -9,6 +9,7 @@
 #include <boost/lexical_cast.hpp>
 using boost::gregorian::date;
 using boost::gregorian::date_period;
+using boost::gregorian::from_string;
 using boost::date_time::neg_infin;
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
@@ -91,7 +92,13 @@ public:
             : valid(true), validperiod(dp), licno(lcn), compname(cmpn), content(cont) {
         setyntype(typ);
     }
-    void setyntype(unsigned char typ) {
+    licshiprec(const string &sdbeg, const string &sdend, const string &slcn, const string &scmpn,
+               const string &scont, const string &styp)
+            : valid(true), validperiod(date_period(from_string(sdbeg), from_string(sdend))),
+              licno(slcn), compname(scmpn), content(scont) {
+        setyntype(lexical_cast<unsigned short>(styp));
+    }
+    void setyntype(unsigned short typ) {
         ynssn = ((typ & 0x1) != 0);
         ynssj = ((typ & 0x2) != 0);
         ynsn  = ((typ & 0x4) != 0);
@@ -99,7 +106,7 @@ public:
         ynjy  = ((typ & 0x10) != 0);
         yngo  = ((typ & 0x20) != 0);
     }
-    unsigned char getyntype() {
+    unsigned short getyntype() {
         unsigned char ret = 0x0;
         if (ynssn) ret |= 0x1;
         if (ynssj) ret |= 0x2;
