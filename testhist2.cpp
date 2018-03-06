@@ -107,7 +107,7 @@ void test_history2a() {
     typedef hislicship_t::node_type lnode_t;
     shared_ptr<hislicship_t> palicship = make_shared<hislicship_t>();
     dp = date_period(date(2015, 10, 24), date(2017, 10, 24));
-    licshiprec l(dp, "XX20150016", "fooCOMP", "Your Lisence Content is:...", 0x38);
+    licshiprec l(dp, "XX20150016", "Fu188", "fooCOMP", "Your Lisence Content is:...", 0x38);
     palicship->insnode(lnode_t(l, dp));
     dp = date_period(date(2017, 10, 12), date(2019, 10, 12));
     l.validperiod = dp;
@@ -115,8 +115,21 @@ void test_history2a() {
     l.ynsj = false;
     l.ynsn = true;
     palicship->insnode(lnode_t(l, dp));
-    l = licshiprec("2017-10-06", "2019-10-01", "BB20170338", "fooYYY", "Your Lisence...", "32");
+    l = licshiprec("2018-10-06", "2019-10-01", "BB20170338", "Fu38", "fooYYY", "Your Lisence...", "32");
     palicship->insnode(lnode_t(l, l.validperiod));
     palicship->print();
     cout << l.getyntype() << " - 0x" << hex << l.getyntype() << dec << endl;
+
+    hislicship_t::base_type const *plic = palicship->at(date(2015, 9, 30));
+    if (plic) cout << "plic: " << *plic << endl;
+    else cout << "plic is nullptr.\n";
+    plic = palicship->at(date(2017, 1, 1));
+    if (plic) cout << "plic: " << *plic << endl;
+    else cout << "plic is nullptr.\n";
+    plic = palicship->at(date(2019, 1, 1));
+    if (plic) cout << "plic: " << *plic << endl;
+    else cout << "plic is nullptr.\n";
+    plic = palicship->at(date(2019, 10, 1));
+    if (plic) cout << "plic: " << *plic << endl;
+    else cout << "plic is nullptr.\n";
 }

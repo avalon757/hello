@@ -59,26 +59,34 @@ public:
     typedef T base_type;
     typedef histnode<T> node_type;
     typedef vector<node_type> vtnodes_type;
-//    typedef vector<histnode<T> > vtnodes_type;
 
+    int getid() { return id; }
     vtnodes_type &getvtdata() { return vtdata; }
 
     bool insnode(const node_type &node) {   // 插入一个节点
+        if (!vtdata.empty()) {  // 每次插入时，截掉最后节点尾部超出期限
+            node_type &lastnode = vtdata.back();
+            if (lastnode.dp.end() > node.dp.begin())
+                lastnode.dp = date_period(lastnode.dp.begin(), node.dp.begin());
+        }
         vtdata.push_back(node);
         return true;
     }
+
     base_type const *at(date dt) {          // 时间点上的数据
         for (auto it = vtdata.begin(); it != vtdata.end(); ++it)
             if (it->dp.contains(dt))
                 return &(it->data);
         return nullptr;
     }
+
     void print() const {
         for (auto v : vtdata)
             cout << v.dp << " -> " << v.data << endl;
     }
 
 protected:
+    int id;
     vtnodes_type vtdata;
 };
 
@@ -87,12 +95,68 @@ class licshiprec {
 public:
     licshiprec() = default;
     licshiprec(const licshiprec &r) = default;
-    licshiprec(const date_period &dp, const string &lcn, const string &cmpn,
+    licshiprec(const date_period &dp, const string &lcn, const string &shpn, const string &cmpn,
+               const string &cont, unsigned char typ)
+            : valid(true), validperiod(dp), licno(lcn), shipname(shpn), compname(cmpn), content(cont) {
+        setyntype(typ);
+    }
+    licshiprec(const string &sdbeg, const string &sdend, const string &slcn, const string &sshpn,
+               const string &scmpn, const string &scont, const string &styp)
+            : valid(true), validperiod(date_period(from_string(sdbeg), from_string(sdend))),
+              licno(slcn), shipname(sshpn), compname(scmpn), content(scont) {
+        setyntype(lexical_cast<unsigned short>(styp));
+    }
+    void setyntype(unsigned short typ) {
+        ynssn = ((typ & 0x1) != 0);
+        ynssj = ((typ & 0x2) != 0);
+        ynsn  = ((typ & 0x4) != 0);
+        ynsj  = ((typ & 0x8) != 0);
+        ynjy  = ((typ & 0x10) != 0);
+        yngo  = ((typ & 0x20) != 0);
+    }
+    unsigned short getyntype() {
+        unsigned char ret = 0x0;
+        if (ynssn) ret |= 0x1;
+        if (ynssj) ret |= 0x2;
+        if (ynsn ) ret |= 0x4;
+        if (ynsj ) ret |= 0x8;
+        if (ynjy ) ret |= 0x10;
+        if (yngo ) ret |= 0x20;
+        return ret;
+    }
+
+    friend ostream &operator<<(ostream &os, const licshiprec &r) {
+        return os << "(" << r.validperiod << ", " << r.licno << ", " << r.shipname
+                << ", " << r.compname << ", " << r.content << ", " << r.yngo << "|" << r.ynjy
+                << "|" << r.ynsj << "|" << r.ynsn<< "|" << r.ynssj << "|" << r.ynssn << ")";
+    }
+
+    bool valid;
+    date_period validperiod = dpnull;
+    string licno;
+    string shipname;
+    string compname;
+    string content;
+    // go|jy||sj|sn||ssj|ssn  [6 - 0]
+    bool yngo;
+    bool ynjy;
+    bool ynsj;
+    bool ynsn;
+    bool ynssj;
+    bool ynssn;
+};
+typedef history2<licshiprec> hislicship_t;
+
+class liccomprec {
+public:
+    liccomprec() = default;
+    liccomprec(const liccomprec &r) = default;
+    liccomprec(const date_period &dp, const string &lcn, const string &cmpn,
                const string &cont, unsigned char typ)
             : valid(true), validperiod(dp), licno(lcn), compname(cmpn), content(cont) {
         setyntype(typ);
     }
-    licshiprec(const string &sdbeg, const string &sdend, const string &slcn, const string &scmpn,
+    liccomprec(const string &sdbeg, const string &sdend, const string &slcn, const string &scmpn,
                const string &scont, const string &styp)
             : valid(true), validperiod(date_period(from_string(sdbeg), from_string(sdend))),
               licno(slcn), compname(scmpn), content(scont) {
@@ -117,7 +181,7 @@ public:
         return ret;
     }
 
-    friend ostream &operator<<(ostream &os, const licshiprec &r) {
+    friend ostream &operator<<(ostream &os, const liccomprec &r) {
         return os << "(" << r.validperiod << ", " << r.licno << ", " << r.compname
                     << ", " << r.content << ", " << r.yngo << "|" << r.ynjy
                 << "|" << r.ynsj << "|" << r.ynsn<< "|" << r.ynssj << "|" << r.ynssn << ")";
@@ -136,7 +200,28 @@ public:
     bool ynssj;
     bool ynssn;
 };
-typedef history2<licshiprec> hislicship_t;
+typedef history2<liccomprec> hisliccomp_t;
+
+class companyrec
+{
+    companyrec() = default;
+    companyrec(const companyrec &r) = default;
+    companyrec(const string &na, const string &ad, const string &lem, double rc, date opt, unsigned short ar)
+            : name(na), addr(ad), legalman(lem), regcapital(rc), opentime(opt), areaid(ar) {}
+    companyrec(const string &na, const string &ad, const string &lem, const string &src, const string &sopt, const string &sar)
+            : name(na), addr(ad), legalman(lem),
+              regcapital(lexical_cast<double>(src)),
+              opentime(from_string(sopt)), areaid(lexical_cast<unsigned short>(sar)) {}
+    string name;
+    string addr;
+    string legalman;
+    double regcapital;
+    date opentime;
+    unsigned short areaid;
+    shared_ptr<hisliccomp_t> lic;
+    shared_ptr<hisliccomp_t> hklic;
+};
+typedef history2<companyrec> hiscomp_t;
 
 class shiprec
 {
@@ -179,18 +264,12 @@ public:
     double zzd;
     int teu;
     int gl;
+    shared_ptr<hisliccomp_t> cmpy;
     shared_ptr<hislicship_t> lic;
     shared_ptr<hislicship_t> hklic;
 };
 typedef history2<shiprec> hisship_t;
 
-
-class companyrec
-{
-    string name;
-    string addr;
-    string legalman;
-};
 
 
 
