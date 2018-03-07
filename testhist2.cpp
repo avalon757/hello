@@ -8,6 +8,11 @@ using namespace std;
 using boost::gregorian::years;
 using boost::gregorian::days;
 
+template <class T>
+void prnitem(T elem) {
+    cout << elem << " | ";
+}
+
 void test_history1() {
 
     shipinfo s = shipinfo();
@@ -97,12 +102,24 @@ void test_history2a() {
     paship->insnode(snode_t(s, date_period(date(2008, 1, 1), date(2012, 1, 1))));
     paship->print();
 
+    void (*pfi)(date) = prnitem;
+    auto pa = paship->dateserial();
+    for_each(pa->begin(), pa->end(), pfi);
+    cout << endl;
+
     shared_ptr<hisship_t> pbship = make_shared<hisship_t>();
     s = shiprec("fooB", 333.0, 338.0, 0, 123);
     pbship->insnode(snode_t(s, date_period(date(2006, 4, 1), date(2008, 12, 1))));
     pbship->insnode(snode_t(s, date_period(date(2008, 12, 1), date(2010, 12, 1))));
     pbship->insnode(snode_t(s, date_period(date(2010, 12, 1), date(2016, 1, 1))));
     pbship->print();
+
+    auto pb = pbship->dateserial();     // 必须定义 shared_ptr 指针才可用，才不会被析构
+//    for_each(pb->begin(), pb->end(), pfi);
+//    cout << endl;
+    for(auto v : *(pb))
+        prnitem(v);
+    cout << endl;
 
     typedef hislicship_t::node_type lnode_t;
     shared_ptr<hislicship_t> palicship = make_shared<hislicship_t>();

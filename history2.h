@@ -14,9 +14,14 @@ using boost::date_time::neg_infin;
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
+#include <algorithm>
+using std::sort;
+using std::unique;
+
 using std::string;
 using std::vector;
 using std::shared_ptr;
+using std::make_shared;
 using std::ostream;
 using std::cout;
 using std::endl;
@@ -78,6 +83,18 @@ public:
             if (it->dp.contains(dt))
                 return &(it->data);
         return nullptr;
+    }
+
+    shared_ptr<vector<date>> dateserial() {
+        shared_ptr<vector<date>> p = make_shared<vector<date>>();
+        for (auto v : vtdata) {
+            p->push_back(v.dp.begin());
+            p->push_back(v.dp.end());
+        }
+        sort(p->begin(), p->end());
+        auto item = unique(p->begin(), p->end());
+        p->erase(item, p->end());
+        return p;
     }
 
     void print() const {
