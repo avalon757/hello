@@ -79,7 +79,7 @@ public:
     }
 
     base_type const *at(date dt) {          // 时间点上的数据
-        for (auto it = vtdata.begin(); it != vtdata.end(); ++it)
+        for (auto it = vtdata.rbegin(); it != vtdata.rend(); ++it)
             if (it->dp.contains(dt))
                 return &(it->data);
         return nullptr;

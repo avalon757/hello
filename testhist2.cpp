@@ -102,9 +102,17 @@ void test_history2a() {
     paship->insnode(snode_t(s, date_period(date(2008, 1, 1), date(2012, 1, 1))));
     paship->print();
 
-    void (*pfi)(date) = prnitem;
     auto pa = paship->dateserial();
+    void (*pfi)(date) = prnitem;
     for_each(pa->begin(), pa->end(), pfi);
+    cout << endl;
+    for_each(pa->begin(), pa->end(), [](date vi){ prnitem(vi); });
+    cout << endl;
+    for(auto v : *(pa)) {
+        auto p = paship->at(v);
+        if (nullptr != p)
+            prnitem(*p);
+    }
     cout << endl;
 
     shared_ptr<hisship_t> pbship = make_shared<hisship_t>();
@@ -115,10 +123,12 @@ void test_history2a() {
     pbship->print();
 
     auto pb = pbship->dateserial();     // 必须定义 shared_ptr 指针才可用，才不会被析构
-//    for_each(pb->begin(), pb->end(), pfi);
-//    cout << endl;
-    for(auto v : *(pb))
+    for(auto v : *(pb)) {
         prnitem(v);
+        auto p = pbship->at(v);
+        if (nullptr != p)
+            prnitem(*p);
+    }
     cout << endl;
 
     typedef hislicship_t::node_type lnode_t;
