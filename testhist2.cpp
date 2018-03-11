@@ -8,9 +8,23 @@ using namespace std;
 using boost::gregorian::years;
 using boost::gregorian::days;
 
+#include <boost/tokenizer.hpp>
+#include <fstream>
+
+using boost::escaped_list_separator;
+using boost::tokenizer;
+
 template <class T>
 void prnitem(T elem) {
     cout << elem << " | ";
+}
+
+inline date_period make_dp(date first_point, date end_point) {
+    return date_period(first_point, end_point);
+}
+
+inline date_period make_dp(const string &first_point, const string &end_point) {
+    return date_period(from_string(first_point), from_string(end_point));
 }
 
 void test_history1() {
@@ -159,4 +173,26 @@ void test_history2a() {
     plic = palicship->at(date(2019, 10, 1));
     if (plic) cout << "plic: " << *plic << endl;
     else cout << "plic is nullptr.\n";
+}
+
+void test_history2b() {
+
+    typedef hisship_t::node_type snode_t;
+    shared_ptr<hisship_t> paship = make_shared<hisship_t>();
+
+    char buf[1024];
+    ifstream ifile("ex.csv");
+    escaped_list_separator<char> sep('\\', '\t', '\"');
+    tokenizer<escaped_list_separator<char>> tok(string(buf), sep);
+    vector<string> rec;
+    while (ifile.getline(buf, 1024)) {
+        string s(buf);
+        tok.assign(s, sep);
+        rec.clear();
+        for (auto v : tok)
+            rec.push_back(v);
+        if (!rec.empty())
+            paship->insnode(snode_t(shiprec(rec), make_dp(rec[5], rec[6])));
+    }
+    paship->print();
 }

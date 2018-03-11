@@ -7,6 +7,7 @@ using namespace boost::gregorian;
 extern void test_history1();
 extern void test_history2();
 extern void test_history2a();
+extern void test_history2b();
 
 int main() {
 
@@ -15,6 +16,7 @@ int main() {
     test_history1();
     test_history2();
     test_history2a();
+    test_history2b();
 
     cout << t.elapsed() << endl;
 
