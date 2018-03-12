@@ -245,14 +245,14 @@ class shiprec
 public:
     shiprec() = default;
     shiprec(const shiprec &r) = default;
-    shiprec(const string &vname, double vzd, double vzzd, int vteu, int vgl)
+    shiprec(const string &vname, double vzd, double vzzd, int vteu, double vgl)
             : valid(true), name(vname), zd(vzd), zzd(vzzd), teu(vteu), gl(vgl) {}
     shiprec(const string &sname, const string &szd, const string &szzd, const string &steu, const string &sgl)
             : valid(true), name(sname),
               zd(lexical_cast<double>(szd)),
               zzd(lexical_cast<double>(szzd)),
               teu(lexical_cast<int>(steu)),
-              gl(lexical_cast<int>(sgl)) {}
+              gl(lexical_cast<double>(sgl)) {}
     shiprec(const vector<string> &vs) {
         if (vs.size() < 4)
             valid = false;
@@ -262,7 +262,7 @@ public:
             zd = lexical_cast<double>(vs[1]);
             zzd = lexical_cast<double>(vs[2]);
             teu = lexical_cast<int>(vs[3]);
-            gl = lexical_cast<int>(vs[4]);
+            gl = lexical_cast<double>(vs[4]);
         }
     }
 
@@ -280,7 +280,7 @@ public:
     double zd;
     double zzd;
     int teu;
-    int gl;
+    double gl;
     shared_ptr<hisliccomp_t> cmpy;
     shared_ptr<hislicship_t> lic;
     shared_ptr<hislicship_t> hklic;

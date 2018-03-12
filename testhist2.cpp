@@ -191,8 +191,9 @@ void test_history2b() {
         rec.clear();
         for (auto v : tok)
             rec.push_back(v);
-        if (!rec.empty())
+        if (!rec.empty()) {
             paship->insnode(snode_t(shiprec(rec), make_dp(rec[5], rec[6])));
+        }
         line.clear();
     }
     paship->print();
