@@ -4,15 +4,15 @@
 
 #include "history.h"
 #include "history2.h"
+#include <fstream>
 using namespace std;
 using boost::gregorian::years;
 using boost::gregorian::days;
 
 #include <boost/tokenizer.hpp>
-#include <fstream>
-
 using boost::escaped_list_separator;
 using boost::tokenizer;
+
 
 template <class T>
 void prnitem(T elem) {
@@ -180,19 +180,20 @@ void test_history2b() {
     typedef hisship_t::node_type snode_t;
     shared_ptr<hisship_t> paship = make_shared<hisship_t>();
 
-    char buf[1024];
+//    char buf[1024];
     ifstream ifile("ex.csv");
+    string line;
     escaped_list_separator<char> sep('\\', '\t', '\"');
-    tokenizer<escaped_list_separator<char>> tok(string(buf), sep);
+    tokenizer<escaped_list_separator<char>> tok(line, sep);
     vector<string> rec;
-    while (ifile.getline(buf, 1024)) {
-        string s(buf);
-        tok.assign(s, sep);
+    while (getline(ifile, line)) {
+        tok.assign(line, sep);
         rec.clear();
         for (auto v : tok)
             rec.push_back(v);
         if (!rec.empty())
             paship->insnode(snode_t(shiprec(rec), make_dp(rec[5], rec[6])));
+        line.clear();
     }
     paship->print();
 }

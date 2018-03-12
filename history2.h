@@ -48,7 +48,7 @@ class histnode : public histbase
 public:
     histnode()
             : histbase(dpnull), data() {}
-    histnode(const T &d, const date_period &vdp = dpnull)
+    explicit histnode(const T &d, const date_period &vdp = dpnull)
             : data(d), histbase(vdp) {}
 //    const T &at(const date &dt) { return dp.contains(dt) ? data : T(); }
 //    T &get() { return data; }
