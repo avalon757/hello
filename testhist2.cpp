@@ -177,24 +177,33 @@ void test_history2a() {
 
 void test_history2b() {
 
+    vector<shared_ptr<hisship_t>> vsship;
     typedef hisship_t::node_type snode_t;
-    shared_ptr<hisship_t> paship = make_shared<hisship_t>();
+    shared_ptr<hisship_t> pship;
 
-//    char buf[1024];
     ifstream ifile("ex.csv");
     string line;
     escaped_list_separator<char> sep('\\', '\t', '\"');
     tokenizer<escaped_list_separator<char>> tok(line, sep);
     vector<string> rec;
+    string sname("noname");
     while (getline(ifile, line)) {
         tok.assign(line, sep);
         rec.clear();
         for (auto v : tok)
             rec.push_back(v);
         if (!rec.empty()) {
-            paship->insnode(snode_t(shiprec(rec), make_dp(rec[5], rec[6])));
+            if (sname != rec[0]) {
+                sname = rec[0];
+                pship = make_shared<hisship_t>();
+                vsship.push_back(pship);
+            }
+            pship->insnode(snode_t(shiprec(rec), make_dp(rec[5], rec[6])));
         }
         line.clear();
     }
-    paship->print();
+    for (auto v : vsship) {
+        v->print();
+        cout << "----- >< -----\n";
+    }
 }
