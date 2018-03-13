@@ -49,11 +49,15 @@ public:
     histnode()
             : histbase(dpnull), data() {}
     explicit histnode(const T &d, const date_period &vdp = dpnull)
+            : histbase(vdp) {
+        data = make_shared<T>(d);
+    }
+    explicit histnode(shared_ptr<T> d, const date_period &vdp = dpnull)
             : data(d), histbase(vdp) {}
 //    const T &at(const date &dt) { return dp.contains(dt) ? data : T(); }
 //    T &get() { return data; }
 
-    T data;
+    shared_ptr<T> data;
 };
 
 // 历史记录，一串时间段内的数据
@@ -78,10 +82,10 @@ public:
         return true;
     }
 
-    base_type const *at(date dt) {          // 时间点上的数据
+    shared_ptr<T> at(date dt) {          // 时间点上的数据
         for (auto it = vtdata.rbegin(); it != vtdata.rend(); ++it)
             if (it->dp.contains(dt))
-                return &(it->data);
+                return it->data;
         return nullptr;
     }
 
@@ -99,7 +103,7 @@ public:
 
     void print() const {
         for (auto v : vtdata)
-            cout << v.dp << " -> " << v.data << endl;
+            cout << v.dp << " -> " << *(v.data) << endl;
     }
 
 protected:
