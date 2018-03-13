@@ -47,7 +47,7 @@ class histnode : public histbase
 {
 public:
     histnode()
-            : histbase(dpnull), data() {}
+            : histbase(dpnull), data(make_shared<T>()) {}
     explicit histnode(const T &d, const date_period &vdp = dpnull)
             : histbase(vdp) {
         data = make_shared<T>(d);
