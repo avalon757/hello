@@ -65,32 +65,32 @@ void test_history2() {
         cout << "pship_t is null\n";
     p = make_shared<hisship_t>();
     shipnode_t sn;
-    shiprec s("foo", 888.0, 1888.0, 0, 338);
+    shared_ptr<shiprec> s = make_shared<shiprec>("foo", 888.0, 1888.0, 0, 338);
     p->getvtdata().push_back(shipnode_t());
     p->getvtdata().push_back(shipnode_t(s));
     date_period dp = date_period(date(1977, 1, 1), days(100));
     p->getvtdata().push_back(shipnode_t(s, dp));
 //    sn.dp = dpnull;
-    sn.data = shiprec("foo", 777.0, 1747.0, 0, 234);
+    sn.data = make_shared<shiprec>("foo", 777.0, 1747.0, 0, 234);
     sn.dp = date_period(date(1970, 1, 1), date(2000, 1, 1));
     p->getvtdata().push_back(sn);
 
-    sn.data = shiprec("foo", 999.0, 1989.0, 60, 118);
+    sn.data = make_shared<shiprec>("foo", 999.0, 1989.0, 60, 118);
     sn.dp = date_period(date(2000, 1, 1), date(2006, 1, 1));
     p->insnode(sn);
-    p->insnode(shipnode_t(shiprec("One", 666.0, 1626.0, 0, 166), date_period(date(2006, 1, 1), date(2008, 1, 1))));
+    p->insnode(shipnode_t(make_shared<shiprec>("One", 666.0, 1626.0, 0, 166), date_period(date(2006, 1, 1), date(2008, 1, 1))));
     try {
-        p->insnode(shipnode_t(shiprec("Two", "3455.0", "2345.0", "0", "345"), date_period(date(2006, 1, 1), date(2008, 1, 1))));
+        p->insnode(shipnode_t(make_shared<shiprec>("Two", "3455.0", "2345.0", "0", "345"), date_period(date(2006, 1, 1), date(2008, 1, 1))));
     } catch (bad_lexical_cast &e) {
         cout << e.what() << endl;
     }
 
     p->print();
 
-    shiprec rec(sn.data);
+    shiprec rec(*(sn.data));
     cout << endl; rec.print(); cout << endl;
 
-    shiprec const *ps = p->at(date(1999, 5, 4));
+    shared_ptr<shiprec> ps = p->at(date(1999, 5, 4));
     if (ps) ps->print();
     cout << endl;
     ps = p->at(date(2003, 5, 4));
@@ -161,7 +161,7 @@ void test_history2a() {
     palicship->print();
     cout << l.getyntype() << " - 0x" << hex << l.getyntype() << dec << endl;
 
-    hislicship_t::base_type const *plic = palicship->at(date(2015, 9, 30));
+    shared_ptr<hislicship_t::base_type> plic = palicship->at(date(2015, 9, 30));
     if (plic) cout << "plic: " << *plic << endl;
     else cout << "plic is nullptr.\n";
     plic = palicship->at(date(2017, 1, 1));
@@ -198,7 +198,7 @@ void test_history2b() {
                 pship = make_shared<hisship_t>();
                 vsship.push_back(pship);
             }
-            pship->insnode(snode_t(shiprec(rec), make_dp(rec[5], rec[6])));
+            pship->insnode(snode_t(make_shared<shiprec>(rec), make_dp(rec[5], rec[6])));
         }
         line.clear();
     }
