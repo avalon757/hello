@@ -8,6 +8,7 @@ extern void test_history1();
 extern void test_history2();
 extern void test_history2a();
 extern void test_history2b();
+extern void test_history3();
 
 int main() {
 
@@ -17,6 +18,7 @@ int main() {
     test_history2();
     test_history2a();
     test_history2b();
+    test_history3();
 
     cout << t.elapsed() << endl;
 

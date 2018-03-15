@@ -111,6 +111,57 @@ protected:
     vtnodes_type vtdata;
 };
 
+class yntype {
+public:
+    yntype() = default;
+    yntype(const yntype &r) = default;
+    yntype(unsigned short itype) {
+        setyntype(itype);
+    }
+    yntype(const string &stype) {
+        setyntype(stype);
+    }
+
+    void setyntype(unsigned short itype) {
+        ynssn = ((itype & 0x1) != 0);
+        ynssj = ((itype & 0x2) != 0);
+        ynsn  = ((itype & 0x4) != 0);
+        ynsj  = ((itype & 0x8) != 0);
+        ynjy  = ((itype & 0x10) != 0);
+        yngo  = ((itype & 0x20) != 0);
+    }
+    void setyntype(const string &stype) {
+        ynssn = (stype[5] == '1');
+        ynssj = (stype[4] == '1');
+        ynsn  = (stype[3] == '1');
+        ynsj  = (stype[2] == '1');
+        ynjy  = (stype[1] == '1');
+        yngo  = (stype[0] == '1');
+    }
+    unsigned short getyntype() {
+        unsigned short ret = 0x0;
+        if (ynssn) ret |= 0x1;
+        if (ynssj) ret |= 0x2;
+        if (ynsn ) ret |= 0x4;
+        if (ynsj ) ret |= 0x8;
+        if (ynjy ) ret |= 0x10;
+        if (yngo ) ret |= 0x20;
+        return ret;
+    }
+
+    friend ostream &operator<<(ostream &os, const yntype& yn) {
+        return os << yn.yngo << "|" << yn.ynjy << "|" << yn.ynsj
+                  << "|" << yn.ynsn  << "|" << yn.ynssj << "|" << yn.ynssn;
+    }
+    // go|jy||sj|sn||ssj|ssn  [6 - 0]
+    bool yngo;
+    bool ynjy;
+    bool ynsj;
+    bool ynsn;
+    bool ynssj;
+    bool ynssn;
+};
+
 // 数据定义
 class licshiprec {
 public:
@@ -127,29 +178,17 @@ public:
               licno(slcn), shipname(sshpn), compname(scmpn), content(scont) {
         setyntype(lexical_cast<unsigned short>(styp));
     }
+
     void setyntype(unsigned short typ) {
-        ynssn = ((typ & 0x1) != 0);
-        ynssj = ((typ & 0x2) != 0);
-        ynsn  = ((typ & 0x4) != 0);
-        ynsj  = ((typ & 0x8) != 0);
-        ynjy  = ((typ & 0x10) != 0);
-        yngo  = ((typ & 0x20) != 0);
+        yn.setyntype(typ);
     }
     unsigned short getyntype() {
-        unsigned char ret = 0x0;
-        if (ynssn) ret |= 0x1;
-        if (ynssj) ret |= 0x2;
-        if (ynsn ) ret |= 0x4;
-        if (ynsj ) ret |= 0x8;
-        if (ynjy ) ret |= 0x10;
-        if (yngo ) ret |= 0x20;
-        return ret;
+        return yn.getyntype();
     }
 
     friend ostream &operator<<(ostream &os, const licshiprec &r) {
         return os << "(" << r.validperiod << ", " << r.licno << ", " << r.shipname
-                << ", " << r.compname << ", " << r.content << ", " << r.yngo << "|" << r.ynjy
-                << "|" << r.ynsj << "|" << r.ynsn<< "|" << r.ynssj << "|" << r.ynssn << ")";
+                << ", " << r.compname << ", " << r.content << ", " << r.yn << ")";
     }
 
     bool valid;
@@ -158,13 +197,7 @@ public:
     string shipname;
     string compname;
     string content;
-    // go|jy||sj|sn||ssj|ssn  [6 - 0]
-    bool yngo;
-    bool ynjy;
-    bool ynsj;
-    bool ynsn;
-    bool ynssj;
-    bool ynssn;
+    yntype yn;
 };
 typedef history2<licshiprec> hislicship_t;
 
@@ -184,28 +217,15 @@ public:
         setyntype(lexical_cast<unsigned short>(styp));
     }
     void setyntype(unsigned short typ) {
-        ynssn = ((typ & 0x1) != 0);
-        ynssj = ((typ & 0x2) != 0);
-        ynsn  = ((typ & 0x4) != 0);
-        ynsj  = ((typ & 0x8) != 0);
-        ynjy  = ((typ & 0x10) != 0);
-        yngo  = ((typ & 0x20) != 0);
+        yn.setyntype(typ);
     }
     unsigned short getyntype() {
-        unsigned char ret = 0x0;
-        if (ynssn) ret |= 0x1;
-        if (ynssj) ret |= 0x2;
-        if (ynsn ) ret |= 0x4;
-        if (ynsj ) ret |= 0x8;
-        if (ynjy ) ret |= 0x10;
-        if (yngo ) ret |= 0x20;
-        return ret;
+        return yn.getyntype();
     }
 
     friend ostream &operator<<(ostream &os, const liccomprec &r) {
         return os << "(" << r.validperiod << ", " << r.licno << ", " << r.compname
-                    << ", " << r.content << ", " << r.yngo << "|" << r.ynjy
-                << "|" << r.ynsj << "|" << r.ynsn<< "|" << r.ynssj << "|" << r.ynssn << ")";
+                    << ", " << r.content << ", " << r.yn << ")";
     }
 
     bool valid;
@@ -213,18 +233,13 @@ public:
     string licno;
     string compname;
     string content;
-    // go|jy||sj|sn||ssj|ssn  [6 - 0]
-    bool yngo;
-    bool ynjy;
-    bool ynsj;
-    bool ynsn;
-    bool ynssj;
-    bool ynssn;
+    yntype yn;
 };
 typedef history2<liccomprec> hisliccomp_t;
 
 class companyrec
 {
+public:
     companyrec() = default;
     companyrec(const companyrec &r) = default;
     companyrec(const string &na, const string &ad, const string &lem, double rc, date opt, unsigned short ar)
@@ -233,6 +248,22 @@ class companyrec
             : name(na), addr(ad), legalman(lem),
               regcapital(lexical_cast<double>(src)),
               opentime(from_string(sopt)), areaid(lexical_cast<unsigned short>(sar)) {}
+    companyrec(const vector<string> &vs)
+    {
+        if (vs.size() < 6) return;
+        name = vs[0];
+        addr = vs[1];
+        legalman = vs[2];
+        regcapital = (vs[3].empty() ? 0 : lexical_cast<double>(vs[3]));
+        opentime = (vs[4].empty() ? date(1970,1,1) : from_string(vs[4]));
+        areaid = lexical_cast<unsigned short>(vs[5]);
+    }
+
+    friend ostream &operator<<(ostream &os, const companyrec &r) {
+        return os << "(" << r.name << ", " << r.addr << ", " << r.legalman
+                  << ", " << r.regcapital << ", " << r.opentime << ", " << r.areaid << ")";
+    }
+
     string name;
     string addr;
     string legalman;
@@ -249,34 +280,46 @@ class shiprec
 public:
     shiprec() = default;
     shiprec(const shiprec &r) = default;
-    shiprec(const string &vname, double vzd, double vzzd, int vteu, double vgl)
-            : valid(true), name(vname), zd(vzd), zzd(vzzd), teu(vteu), gl(vgl) {}
-    shiprec(const string &sname, const string &szd, const string &szzd, const string &steu, const string &sgl)
+    shiprec(const string &vname, double vzd, double vzzd, int vteu, double vgl, unsigned short itype)
+            : valid(true), name(vname), zd(vzd), zzd(vzzd), teu(vteu), gl(vgl), yn(itype) {}
+    shiprec(const string &sname, const string &szd, const string &szzd
+            , const string &steu, const string &sgl, const string &stype = "000000")
             : valid(true), name(sname),
               zd(lexical_cast<double>(szd)),
               zzd(lexical_cast<double>(szzd)),
               teu(lexical_cast<int>(steu)),
-              gl(lexical_cast<double>(sgl)) {}
+              gl(lexical_cast<double>(sgl)),
+              yn(stype) {}
     shiprec(const vector<string> &vs) {
-        if (vs.size() < 4)
+        if (vs.size() < 6)
             valid = false;
         else {
             valid = true;
             name = vs[0];
-            zd = lexical_cast<double>(vs[1]);
-            zzd = lexical_cast<double>(vs[2]);
-            teu = lexical_cast<int>(vs[3]);
-            gl = lexical_cast<double>(vs[4]);
+            zd = (vs[1].empty() ? 0 : lexical_cast<double>(vs[1]));
+            zzd = (vs[2].empty() ? 0 : lexical_cast<double>(vs[2]));
+            teu = (vs[3].empty() ? 0 : lexical_cast<int>(vs[3]));
+            gl = (vs[4].empty() ? 0 : lexical_cast<double>(vs[4]));
+            yn.setyntype(vs[5]);
         }
+    }
+    void setyntype(unsigned short itype) {
+        yn.setyntype(itype);
+    }
+    void setyntype(const string &stype) {
+        yn.setyntype(stype);
+    }
+    unsigned short getyntype() {
+        return yn.getyntype();
     }
 
     void print() const {
-        cout << "(" << name << ", " << zd
-                  << ", " << zzd << ", " << teu << ", " << gl << ")";
+        cout << "(" << name << ", " << zd << ", " << zzd
+             << ", " << teu << ", " << gl << ", " <<  yn << ")";
     }
     friend ostream &operator<<(ostream &os, const shiprec &r) {
-        return os << "(" << r.name << ", " << r.zd
-                         << ", " << r.zzd << ", " << r.teu << ", " << r.gl << ")";
+        return os << "(" << r.name << ", " << r.zd << ", " << r.zzd
+                  << ", " << r.teu << ", " << r.gl <<  ", " << r.yn << ")";
     }
 
     bool valid;
@@ -285,6 +328,7 @@ public:
     double zzd;
     int teu;
     double gl;
+    yntype yn;
     shared_ptr<hisliccomp_t> cmpy;
     shared_ptr<hislicship_t> lic;
     shared_ptr<hislicship_t> hklic;
