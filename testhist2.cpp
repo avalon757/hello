@@ -27,6 +27,29 @@ inline date_period make_dp(const string &first_point, const string &end_point) {
     return date_period(from_string(first_point), from_string(end_point));
 }
 
+void totalat(const vector<shared_ptr<hisship_t>> &vss, const date &dt) {
+
+    vector<shared_ptr<shiprec>> vs;
+    for (auto v : vss) {
+        shared_ptr<shiprec> sps = v->at(dt);
+        if (sps != nullptr)
+            vs.push_back(sps);
+    }
+    shiprec ttl = shiprec();
+    int n = 0;
+    for (auto v : vs) {
+        ttl.zd += v->zd;
+        ttl.zzd += v->zzd;
+        ttl.teu += v->teu;
+        ttl.gl += v->gl;
+        ++n;
+    }
+    cout << dt << " total number: " << n << endl;
+    ttl.name = string("total ") + to_iso_extended_string(dt);
+    ttl.print();
+    cout << endl;
+}
+
 void test_history1() {
 
     shipinfo s = shipinfo();
@@ -202,10 +225,14 @@ void test_history2b() {
         }
         line.clear();
     }
-    for (auto v : vsship) {
-        v->print();
-        cout << "----- >< -----\n";
-    }
+//    for (auto v : vsship) {
+//        v->print();
+//        cout << "----- >< -----\n";
+//    }
+
+    totalat(vsship, date(2016, 1, 1));
+    totalat(vsship, date(2017, 1, 1));
+    totalat(vsship, date(2018, 1, 1));
 }
 
 void test_history3() {

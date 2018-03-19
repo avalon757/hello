@@ -82,7 +82,7 @@ public:
         return true;
     }
 
-    shared_ptr<T> at(date dt) {          // 时间点上的数据
+    shared_ptr<T> at(const date &dt) {          // 时间点上的数据
         for (auto it = vtdata.rbegin(); it != vtdata.rend(); ++it)
             if (it->dp.contains(dt))
                 return it->data;
